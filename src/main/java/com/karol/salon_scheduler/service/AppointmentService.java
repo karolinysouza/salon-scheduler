@@ -1,4 +1,4 @@
-package com.karol.salon_scheduler.services;
+package com.karol.salon_scheduler.service;
 
 import com.karol.salon_scheduler.infrastructure.entity.Appointment;
 import com.karol.salon_scheduler.infrastructure.repository.AppointmentRepository;
