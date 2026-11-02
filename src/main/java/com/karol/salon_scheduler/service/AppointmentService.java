@@ -5,7 +5,9 @@ import com.karol.salon_scheduler.infrastructure.repository.AppointmentRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -28,8 +30,17 @@ public class AppointmentService {
 
         return appointmentRepository.save(appointment);
     }
+
     public void deleteAppointment(LocalDateTime appointmentDateTime, String clientName) {
-        appointmentRepository.deleteByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);
+        appointmentRepository
+                .deleteByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);
+    }
+
+    public List<Appointment> findAppointmentsByDay(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+
+        return appointmentRepository.findByAppointmentDateTimeBetween(startOfDay, endOfDay);
     }
 }
 

@@ -1,0 +1,71 @@
+[1mdiff --git a/src/main/java/com/karol/salon_scheduler/infrastructure/repository/AppointmentRepository.java b/src/main/java/com/karol/salon_scheduler/infrastructure/repository/AppointmentRepository.java[m
+[1mindex e56123d..aae1844 100644[m
+[1m--- a/src/main/java/com/karol/salon_scheduler/infrastructure/repository/AppointmentRepository.java[m
+[1m+++ b/src/main/java/com/karol/salon_scheduler/infrastructure/repository/AppointmentRepository.java[m
+[36m@@ -5,11 +5,19 @@[m [mimport org.springframework.data.jpa.repository.JpaRepository;[m
+ import org.springframework.transaction.annotation.Transactional;[m
+ [m
+ import java.time.LocalDateTime;[m
+[32m+[m[32mimport java.util.List;[m
+ [m
+ public interface AppointmentRepository extends JpaRepository<Appointment, Long> {[m
+     Appointment findByServiceTypeAndAppointmentDateTimeBetween([m
+             String serviceType, LocalDateTime startTime, LocalDateTime endTime);[m
+ [m
+     @Transactional[m
+[31m-    void deleteByAppointmentDateTimeAndClientName(LocalDateTime appointmentDateTime, String clientName);[m
+[32m+[m[32m    void deleteByAppointmentDateTimeAndClientName([m
+[32m+[m[32m            LocalDateTime appointmentDateTime, String clientName);[m
+[32m+[m
+[32m+[m[32m    List<Appointment> findByAppointmentDateTimeBetween([m
+[32m+[m[32m            LocalDateTime startTime, LocalDateTime endTime);[m
+[32m+[m
+[32m+[m[32m    Appointment findByAppointmentDateTimeAndClientName([m
+[32m+[m[32m            LocalDateTime appointmentDateTime, String clientName);[m
+ }[m
+[1mdiff --git a/src/main/java/com/karol/salon_scheduler/service/AppointmentService.java b/src/main/java/com/karol/salon_scheduler/service/AppointmentService.java[m
+[1mindex 6cf1aba..55a2bcd 100644[m
+[1m--- a/src/main/java/com/karol/salon_scheduler/service/AppointmentService.java[m
+[1m+++ b/src/main/java/com/karol/salon_scheduler/service/AppointmentService.java[m
+[36m@@ -5,7 +5,9 @@[m [mimport com.karol.salon_scheduler.infrastructure.repository.AppointmentRepository[m
+ import lombok.RequiredArgsConstructor;[m
+ import org.springframework.stereotype.Service;[m
+ [m
+[32m+[m[32mimport java.time.LocalDate;[m
+ import java.time.LocalDateTime;[m
+[32m+[m[32mimport java.util.List;[m
+ import java.util.Objects;[m
+ [m
+ @Service[m
+[36m@@ -28,8 +30,30 @@[m [mpublic class AppointmentService {[m
+ [m
+         return appointmentRepository.save(appointment);[m
+     }[m
+[32m+[m
+     public void deleteAppointment(LocalDateTime appointmentDateTime, String clientName) {[m
+[31m-        appointmentRepository.deleteByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);[m
+[32m+[m[32m        appointmentRepository.[m
+[32m+[m[32m                deleteByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public List<Appointment> findAppointmentsByDay(LocalDate date) {[m
+[32m+[m[32m        LocalDateTime startOfDay = date.atStartOfDay();[m
+[32m+[m[32m        LocalDateTime endOfDay = date.atTime(23,59,59);[m
+[32m+[m
+[32m+[m[32m        return appointmentRepository.findByAppointmentDateTimeBetween(startOfDay, endOfDay);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public  Appointment updateAppointment(Appointment appointment, String clientName,[m
+[32m+[m[32m                                          LocalDateTime appointmentDateTime) {[m
+[32m+[m[32m        Appointment existingAppointment = appointmentRepository[m
+[32m+[m[32m                .findByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);[m
+[32m+[m
+[32m+[m[32m        if (Objects.isNull(existingAppointment)) {[m
+[32m+[m[32m            throw new RuntimeException("Appointment not found");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        appointment.setId(existingAppointment.getId());[m
+[32m+[m[32m        return appointmentRepository.save(appointment);[m
+     }[m
+ }[m
+ [m
