@@ -18,13 +18,18 @@ public class AppointmentService {
 
         LocalDateTime endTime = startTime.plusHours(1).minusMinutes(1);
 
-        Appointment existingAppointment = appointmentRepository.findByServiceTypeAndAppointmentDateTimeBetween(appointment.getServiceType(), startTime, endTime);
+        Appointment existingAppointment = appointmentRepository
+                .findByServiceTypeAndAppointmentDateTimeBetween(
+                        appointment.getServiceType(), startTime, endTime);
 
         if (Objects.nonNull(existingAppointment)) {
             throw new RuntimeException("Time slot is already booked");
         }
 
         return appointmentRepository.save(appointment);
+    }
+    public void deleteAppointment(LocalDateTime appointmentDateTime, String clientName) {
+        appointmentRepository.deleteByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);
     }
 }
 
