@@ -42,5 +42,18 @@ public class AppointmentService {
 
         return appointmentRepository.findByAppointmentDateTimeBetween(startOfDay, endOfDay);
     }
+
+    public Appointment updateAppointment(Appointment appointment, String clientName,
+                                         LocalDateTime appointmentDateTime) {
+        Appointment existingAppointment = appointmentRepository
+                .findByAppointmentDateTimeAndClientName(appointmentDateTime, clientName);
+
+        if (Objects.isNull(existingAppointment)) {
+            throw new RuntimeException("Appointment not found");
+        }
+
+        appointment.setId(existingAppointment.getId());
+        return appointmentRepository.save(appointment);
+    }
 }
 
