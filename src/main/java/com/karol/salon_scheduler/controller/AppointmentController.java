@@ -5,10 +5,9 @@ import com.karol.salon_scheduler.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/appointments")
@@ -21,5 +20,13 @@ public class AppointmentController {
     public ResponseEntity<Appointment> saveAppointment(@RequestBody Appointment appointment) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(appointmentService.saveAppointment(appointment));
+    }
+
+    @DeleteMapping
+    public  ResponseEntity<Void> deleteAppointment(
+            @RequestParam String clientName,
+            @RequestParam LocalDateTime appointmentDateTime) {
+        appointmentService.deleteAppointment(appointmentDateTime, clientName);
+        return ResponseEntity.noContent().build();
     }
 }
