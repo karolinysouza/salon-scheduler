@@ -29,4 +29,9 @@ public class AppointmentController {
         appointmentService.deleteAppointment(appointmentDateTime, clientName);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping
+    public ResponseEntity<List<Appointment>> findAppointmentsByDay(@RequestParam LocalDate date) {
+        return ResponseEntity.ok(appointmentService.findAppointmentsByDay(date));
+    }
 }
